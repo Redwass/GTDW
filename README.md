@@ -8,13 +8,14 @@ According to the GTDW approach, we chose to perform the instantiation process on
 
 As a reminder, the Star Schema Benchmark, or SSB, was designed to evaluate the performance of database systems for star schema data warehouse queries. The SSB schema is based on the [TPC-H benchmark] (http://www.tpc.org/tpch/), but in a modified form with LINEORDER as a central fact table and dimension tables for customer, part, supplier, and date. The queries are also based on the TPC-H queries, but the number of queries is reduced to 13 and have been chosen to cover as much of the SSB as possible, so that potential users can derive a performance evaluation of the weighted subset they expect to use in practice. They are divided into 4 subgroups according to the difficulty and the number of domensions involved. The idea is that the total number of fact table rows retrieved will be determined by the selectivity (i.e., total Filter Factor FF) of restrictions on dimensions. More details in [Paper Download](https://www.cs.umb.edu/~poneil/StarSchemaB.PDF)
 
-As the SSB data spans from 1992 to 1998, the versioning was set as follows :
 
-(1) A 1st schema for 1992 and 1993 data composed of a fact Sales analyzed according to the Part and Customer dimensions. The fact Sales is indicated by the measures Sales_Amount, Discount and Supplycost. The dimension Part is described by the attributes P_Name and Size and a hierarchical levels Category, Mfgr, Brand and Type. The dimension Customer is described by the attributes C_Name, C_Address and C_Phone, and a hierarchical levels C_City, C_Nation, C_Region and Segment. Note that for further study, we ourselves created these levels that were attributes in the SSB original dataset. This version is valid during the period 𝑇1 =[01/01/2019,31/12/2019] 
+As the SSB data span from 1992 to 1998, the following changes in relationships were made:
 
-(2) A 2nd schema version for data from 1994 to 1996 characterised by he addition of a new Supplier dimension described by the attributes S_Name, S_Address and S_Phone, and a hierarchical levels S_City, S_Nation and S_Region. This version is valid during the period 𝑇2 =[01/01/2020,31/12/2020]
+(1) For the dimension Customer, one hundred randomly selected customers have changed their assignment on the hierarchical levels  C_City, C_Nation and C_Region. Thus, these clients are assigned to two different levels according to the two time intervals T1 = [FD1 = 01/01/1992, TD1 = 01/01/1994] and T1 = [FD1 = 01/01/1994, TD1 = 31/12/9999]. 
 
-(3) A 3rd version of the schema for 1997 and 1998 data characterised by the removal of the Customer dimension and the addition of a Quantity measure. This version is valid during the period 𝑇3 = [01/01/2021,31/12/2021]
+(2) For the dimension Supplier, one hundred randomly selected suppliers have changed their assignment on the hierarchical levels C_City, C_Nation and C_Region. Thus, these suppliers are assigned to two different levels according to the two time intervals T2 = [FD2 = 01/01/1992, TD2 = 01/01/1996] and T2 = [FD2 = 01/01/1996, TD2 = 31/12/9999].
+
+(3) For the dimension \textsc{Part}, the \textsc{Size} attributes of one hundred randomly selected products were changed . Thus, these products had two different sizes; they had one size for the time interval $T_{3}$ = [$FD_{3}$ = 01/01/1992, $TD_{3}$ = 01/01/1995] and another size for the time interval $T_{3}$$'$ = [$FD_{3}$ = 01/01/1995, $TD_{3}$ = 31/12/9999]
 
 It should be noted that the validity period of the versions may correspond to the effective validity period of the data as well as being different for dealing with earlier data as in this case.  
 
