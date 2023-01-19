@@ -15,7 +15,7 @@ As the SSB data span from 1992 to 1998, the following changes in relationships w
 
 (2) For the dimension Supplier, one hundred randomly selected suppliers have changed their assignment on the hierarchical levels C_City, C_Nation and C_Region. Thus, these suppliers are assigned to two different levels according to the two time intervals T2 = [FD2 = 01/01/1992, TD2 = 01/01/1996] and T2 = [FD2 = 01/01/1996, TD2 = 31/12/9999].
 
-(3) For the dimension \textsc{Part}, the \textsc{Size} attributes of one hundred randomly selected products were changed . Thus, these products had two different sizes; they had one size for the time interval $T_{3}$ = [$FD_{3}$ = 01/01/1992, $TD_{3}$ = 01/01/1995] and another size for the time interval $T_{3}$$'$ = [$FD_{3}$ = 01/01/1995, $TD_{3}$ = 31/12/9999]
+(3) For the dimension Part, the Size attributes of one hundred randomly selected products were changed . Thus, these products had two different sizes; they had one size for the time interval T3 = [FD3 = 01/01/1992, TD3 = 01/01/1995] and another size for the time interval T3 = [FD3 = 01/01/1995, TD3 = 31/12/9999]
 
 It should be noted that the validity period of the versions may correspond to the effective validity period of the data as well as being different for dealing with earlier data as in this case.  
 
