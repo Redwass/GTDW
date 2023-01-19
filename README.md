@@ -77,9 +77,14 @@ Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal 
 
 Example 2 :
 ```cypher
-match (d:date)<-[:order_date]-(l:lineorder)-[r:order_part]->(p:part) 
-return d.d_year, count(distinct(p.partkey)), sum(l.lo_revenue) 
-order by d.d_year
+OPTIONAL MATCH (c:cc_city)<-[:c_c_name]-(:c_city)<-[r1:customer_city]-(:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date), (s:sc_city) <-[:s_c_name] - (:s_city) <-[r2:supplier_city] - (s:supplier) <- [:order_supplier]-(l)
+WHERE r1.From_Date <= l.valid_date < r1.To_Date 
+AND r2.From_Date <= l.valid_date < r2.To_Date 
+AND 1992<= d.D_YEAR <=1997
+AND (c.c_city = "united ki1" OR c.c_city = "united ki5")
+AND (s.s_city = "united ki1" OR s.s_city = "united ki5")
+RETURN c.c_city, s.s_city, d.d_year, SUM(l.lo_revenue) AS revenu
+ORDER BY d.d_year ASC, revenu DESC
 ```
 
 Here is a list of SSB queries using Cypher Language Request. They can be applied on Cypher-shell or in Neo4j Browser.
