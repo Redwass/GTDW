@@ -73,9 +73,7 @@ create index idxex_customer_city for (c:customer) on (c.C_CITY);
 
 ## 2. Queries
 
-Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal format. They can be applied on Cypher-shell or in Neo4j Browser. queries has been conditioned according to the FD and TD parameters using the clause **where FD <=Valid_Time<TD. Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N.
-
-(2) Implicit requests: Allows the browsing of all instances related to the entities specified in the query without version restriction. This feature, which is due to the ability of graph databases to traverse instances through the relationships between entities, offers a big advantage in formulating cross-queries using the same simple queries whatever the number of versions. 
+Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal format. They can be applied on Cypher-shell or in Neo4j Browser. queries has been conditioned according to the FD and TD parameters using the clause **where FD <=Valid_Time<TD. Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N. 
 
 Example 2 :
 ```cypher
@@ -84,321 +82,141 @@ return d.d_year, count(distinct(p.partkey)), sum(l.lo_revenue)
 order by d.d_year
 ```
 
+Here is a list of SSB queries using Cypher Language Request. They can be applied on Cypher-shell or in Neo4j Browser.
 
-##### Q1.1 
-
-###### Implicit version (The query will extract data from version 3 since the QUANTITY measure was only added in version 3 ) 
+##### Q1.1
 
 ```cypher
-profile optional match (d:date{D_YEAR:1997})<-[r:order_date]-(l:lineorder)
+optional match (d:date{D_YEAR:1993})<-[r:order_date]-(l:lineorder)
 where 1<= l.LO_DISCOUNT <=3
-and l.LO_QUANTITY < 25
-return sum(l.LO_REVENUE);
-```
-
-###### Explicit version (version 3)  
-```cypher
-profile optional match (d:date{D_YEAR:1997})<-[r:order_date]-(l:lineorder)
-where date({year:2021,month:01}) <= l.TRANSACTION_TIME
-and 1<= l.LO_DISCOUNT <=3
 and l.LO_QUANTITY < 25
 return sum(l.LO_REVENUE);
 ```
 
 ##### Q1.2
 
-###### Implicit version (The query will extract data from version 3 ) 
-
 ```cypher
-profile optional match (d:date{D_YEARMONTHNUM:199701})<-[:order_date]-(l:lineorder)
-where 4 <= l.LO_DISCOUNT <=6
-and 26 <= l.LO_QUANTITY <= 35
-return sum(l.LO_REVENUE);
-```
-
-###### Explicit version (version 3)
-
-```cypher
-profile optional match (d:date{D_YEARMONTHNUM:199701})<-[:order_date]-(l:lineorder)
-where date({year:2021,month:01}) <= l.TRANSACTION_TIME <= date({year:2021,month:12})
-and 4 <= l.LO_DISCOUNT <=6
-and 26 <= l.LO_QUANTITY <= 35
+optional match (d:date{D_YEARMONTHNUM:199401})<-[r:order_date]-(l:lineorder)
+where 4<= l.LO_DISCOUNT <=6
+and 26<= l.LO_QUANTITY <= 35
 return sum(l.LO_REVENUE);
 ```
 
 ##### Q1.3
 
-###### Implicit version (The query will extract data from version 3 ) 
-
 ```cypher
-profile optional match (d:date{D_YEAR:1997, D_WEEKNUMINYEAR:6})<-[r:order_date]-(l:lineorder)
+optional match (d:date{D_YEAR:1994, D_WEEKNUMINYEAR:6})<-[r:order_date]-(l:lineorder)
 where 5<= l.LO_DISCOUNT <=7
-and 26<= l.LO_QUANTITY <= 35
-return sum(l.LO_REVENUE);
-```
-
-###### Explicit version (version 3)
-
-```cypher
-profile optional match (d:date{D_YEAR:1997, D_WEEKNUMINYEAR:6})<-[r:order_date]-(l:lineorder)
-where date({year:2021,month:01}) <= l.TRANSACTION_TIME <= date({year:2021,month:12})
-and 5<= l.LO_DISCOUNT <=7
 and 26<= l.LO_QUANTITY <= 35
 return sum(l.LO_REVENUE);
 ```
 
 ##### Q2.1
 
-###### Implicit version (The query will extract data from version 2 and 3 ) 
-
 ```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where sr.S_REGION = "AMERICA"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
-```
-
-###### Explicit version (version 2)
-
-```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2021,month:1})
-and sr.S_REGION = "AMERICA"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
+optional match (p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier),(d:date)<-[:order_date]-(l)
+where p.P_CATEGORY= "MFGR#12"
+and s.S_REGION = "AMERICA" 
+return sum(l.LO_REVENUE),d.D_YEAR, p.P_BRAND1
+ORDER BY d.D_YEAR, p.P_BRAND;
 ```
 
 ##### Q2.2
-###### Implicit version (The query will extract data from version 2 and 3 ) 
 
 ```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where (pb.P_BRAND >= "MFGR#2221" and pb.P_BRAND <= "MFGR#2228")
-and sr.S_REGION = "ASIA"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
-```
-
-###### Explicit version (version 3)
-
-```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where date({year:2021,month:01}) <= l.TRANSACTION_TIME < date({year:2022,month:01})
-and (pb.P_BRAND >= "MFGR#2221" and pb.P_BRAND <= "MFGR#2228")
-and sr.S_REGION = "ASIA"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
+optional match (p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier),(d:date)<-[:order_date]-(l)
+where (p.P_BRAND >= "MFGR#2221" and p.P_BRAND <= "MFGR#2228")
+and s.S_REGION = "ASIA" 
+return sum(l.LO_REVENUE),d.D_YEAR, p.P_BRAND
+ORDER BY d.D_YEAR, p.P_BRAND;
 ```
 
 ##### Q2.3
-###### Implicit version (The query will extract data from version 2 and 3 ) 
 
 ```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where pb.P_BRAND = "MFGR#2239" 
-and sr.S_REGION = "EUROPE"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
-```
-
-###### Explicit version (version 2)
-
-```cypher
-profile optional match (pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[:supplier_region]->(sr:s_region),(d:date)<-[:order_date]-(l)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2021,month:01})
-and pb.P_BRAND = "MFGR#2239" 
-and sr.S_REGION = "EUROPE"
-return sum(l.LO_REVENUE),d.D_YEAR,pb.P_BRAND
-ORDER BY d.D_YEAR, pb.P_BRAND
+optional match (p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier),(d:date)<-[:order_date]-(l)
+where p.P_BRAND1 = "MFGR#2239" 
+and s.S_REGION = "EUROPE" 
+return sum(l.LO_REVENUE),d.D_YEAR, p.P_BRAND
+ORDER BY d.D_YEAR, p.P_BRAND;
 ```
 
 ##### Q3.1
 
-###### Implicit version (The query will extract data from version 1 and 2) 
-
 ```cypher
-profile optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l)
-,(cn:c_nation)<-[:customer_nation]-(c),(sn:s_nation)<-[:supplier_nation]-(s)
-where 1994<= d.D_YEAR <=1995
-and cr.C_REGION = "ASIA"
-and sr.S_REGION = "ASIA" 
-return cn.C_NATION, sn.S_NATION, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
-```
-
-###### Explicit version (version 2)
-
-```cypher
-profile optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l),
-(cn:c_nation)<-[:customer_nation]-(c),(sn:s_nation)<-[:supplier_nation]-(s)
-where date({year:2021,month:01}) <= l.TRANSACTION_TIME < date({year:2022,month:01})
-and 1994<= d.D_YEAR <=1995
-and cr.C_REGION starts with "ASIA"
-and sr.S_REGION = "ASIA" 
-return cn.C_NATION, sn.S_NATION, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
+where 1992<= d.D_YEAR <=1997
+and c.C_REGION starts with "ASIA"
+and s.S_REGION starts with "ASIA" 
+return c.C_NATION, s.S_NATION, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
 ##### Q3.2
 
-###### Implicit version (The query will extract data from version 1 and 2) 
-
 ```cypher
-optional match (cn:c_nation)<-[:customer_nation]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sn:s_nation)<-[:supplier_nation]-(s:supplier)<-[:order_supplier]-(l),
-(cc:c_city)<-[:customer_city]-(c),(sc:s_city)<-[:supplier_city]-(s)
-where 1994<= d.D_YEAR <=1995
-and cn.C_NATION = "UNITED STATES"
-and sn.S_NATION = "UNITED STATES" 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
-```
-
-###### Explicit version (version 2)
-
-```cypher
-optional match (cn:c_nation)<-[:customer_nation]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sn:s_nation)<-[:supplier_nation]-(s:supplier)<-[:order_supplier]-(l),
-(cc:c_city)<-[:customer_city]-(c),(sc:s_city)<-[:supplier_city]-(s)
-where date({year:2019,month:01}) <= l.TRANSACTION_TIME < date({year:2022,month:01})
-and 1994<= d.D_YEAR <=1995
-and cn.C_NATION = "UNITED STATES"
-and sn.S_NATION = "UNITED STATES" 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
-
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
+where 1992<= d.D_YEAR <=1997
+and c.C_NATION starts with "UNITED STATES" 
+and s.S_NATION starts with "UNITED STATES" 
+return c.C_CITY, s.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
 ##### Q3.3
 
-###### Implicit version (The query will extract data from version 1 and 2) 
-
 ```cypher
-optional match (cc:c_city)<-[:customer_city]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sc:s_city)<-[:supplier_city]-(s:supplier)<-[:order_supplier]-(l)
-where 1994<= d.D_YEAR <=1995
-and (cc.C_CITY = "UNITED KI1" or cc.C_CITY = "UNITED KI5") 
-and (sc.S_CITY = "UNITED KI1" or sc.S_CITY = "UNITED KI5") 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
-```
-
-###### Explicit version (version 2)
-
-```cypher
-match (cc:c_city)<-[:customer_city]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sc:s_city)<-[:supplier_city]-(s:supplier)<-[:order_supplier]-(l)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2021,month:01})
-and 1994<= d.D_YEAR <=1995
-and (cc.C_CITY = "UNITED KI1" or cc.C_CITY = "UNITED KI5") 
-and (sc.S_CITY = "UNITED KI1" or sc.S_CITY = "UNITED KI5") 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
+where 1992<= d.D_YEAR <=1997
+and (c.C_CITY = "UNITED KI1" or c.C_CITY = "UNITED KI5") 
+and (s.S_CITY = "UNITED KI1" or s.S_CITY = "UNITED KI5") 
+return c.C_CITY, s.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
 ##### Q3.4
 
-###### Implicit version (The query will extract data from version 1 and 2) 
-
 ```cypher
-optional match (cc:c_city)<-[:customer_city]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sc:s_city)<-[:supplier_city]-(s:supplier)<-[:order_supplier]-(l)
-where (cc.C_CITY = "UNITED KI1" or cc.C_CITY = "UNITED KI5") 
-and (sc.S_CITY = "UNITED KI1" or sc.S_CITY = "UNITED KI5") 
-and d.D_YEARMONTH = "Dec1995" 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
-```
-
-###### Explicit version (version 2)
-
-```cypher
-optional match (cc:c_city)<-[:customer_city]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(sc:s_city)<-[:supplier_city]-(s:supplier)<-[:order_supplier]-(l)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME <= date({year:2021,month:01})
-and (cc.C_CITY = "UNITED KI1" or cc.C_CITY = "UNITED KI5") 
-and (sc.S_CITY = "UNITED KI1" or sc.S_CITY = "UNITED KI5") 
-and d.D_YEARMONTH = "Dec1995" 
-return cc.C_CITY, sc.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
-ORDER BY d.D_YEAR ASC, revenu DESC
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
+where (c.C_CITY = "UNITED KI1" or c.C_CITY = "UNITED KI5") 
+and (s.S_CITY = "UNITED KI1" or s.S_CITY = "UNITED KI5") 
+and d.D_YEARMONTH = "Dec1997"
+return c.C_CITY, s.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
 ##### Q4.1
 
-###### Implicit version (The query will extract data from version 2 ) 
-
 ```cypher
-profile optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_mfgr]->(pm:p_mfgr),
-(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),(cn:c_nation)<-[:customer_nation]-(c)
-where cr.C_REGION = "AMERICA" 
-and (pm.P_MFGR = "MFGR#1" or pm.P_MFGR = "MFGR#2")
-and sr.S_REGION = "AMERICA"
-return d.D_YEAR, cn.C_NATION, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, cn.C_NATION;
-```
-
-###### Explicit version (version 2)
-
-```cypher
-profile optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_mfgr]->(pm:p_mfgr),
-(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),(cn:c_nation)<-[:customer_nation]-(c)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2021,month:01})
-and cr.C_REGION = "AMERICA" 
-and (pm.P_MFGR = "MFGR#1" or pm.P_MFGR = "MFGR#2")
-and sr.S_REGION = "AMERICA"
-return d.D_YEAR, cn.C_NATION, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, cn.C_NATION;
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
+where c.C_REGION = "AMERICA" 
+and (p.P_MFGR = "MFGR#1" or p.P_MFGR = "MFGR#2")
+and s.S_REGION = "AMERICA"
+return d.D_YEAR, c.C_NATION, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
+ORDER BY d.D_YEAR, c.C_NATION;
 ```
 
 ##### Q4.2
 
-###### Implicit version (The query will extract data from version 2 ) 
-
 ```cypher
-profile optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_mfgr]->(pm:p_mfgr),
-(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),
-(cn:c_nation)<-[:customer_nation]-(c),(p)-[:part_category]->(pc:p_category)
-where cr.C_REGION = "AMERICA" 
-and (d.D_YEAR = 1994 or d.D_YEAR = 1995)
-and (pm.P_MFGR = "MFGR#1" or pm.P_MFGR = "MFGR#2")
-and sr.S_REGION = "AMERICA"
-return d.D_YEAR, cn.C_NATION, pc.P_CATEGORY, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, cn.C_NATION, pc.P_CATEGORY;
-```
-
-###### Explicit version (version 2)
-
-```cypher
-optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_mfgr]->(pm:p_mfgr),
-(sr:s_region)<-[:supplier_region]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),
-(cn:c_nation)<-[:customer_nation]-(c),(p)-[:part_category]->(pc:p_category)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2020,month:01})
-and cr.C_REGION = "AMERICA" 
-and (d.D_YEAR = 1994 or d.D_YEAR = 1995)
-and (pm.P_MFGR = "MFGR#1" or pm.P_MFGR = "MFGR#2")
-and sr.S_REGION = "AMERICA"
-return d.D_YEAR, cn.C_NATION, pc.P_CATEGORY, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, cn.C_NATION, pc.P_CATEGORY;
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
+where c.C_REGION starts with "AMERICA"
+and (d.D_YEAR = 1997 or d.D_YEAR = 1998)
+and (p.P_MFGR = "MFGR#1" or p.P_MFGR = "MFGR#2")
+and s.S_REGION = "AMERICA"
+return d.D_YEAR, s.S_NATION, p.P_CATEGORY,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as profit
+ORDER BY d.D_YEAR, s.S_NATION, p.P_CATEGORY;
 ```
 
 ##### Q4.3
 
-###### Implicit version (The query will extract data from version 2 ) 
-
 ```cypher
-optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_category]->(pc:p_category),
-(sn:s_nation)<-[:supplier_nation]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),(p)-[:part_brand]->(pb:p_brand),(s)-[:supplier_city]->(sc:s_city)
-where date({year:2019,month:01}) <= l.TRANSACTION_TIME <= date({year:2021,month:12})
-and cr.C_REGION = "AMERICA"
-and pc.P_CATEGORY = "MFGR#14"
-and sn.S_NATION = "UNITED STATES" 
-return d.D_YEAR, sc.S_CITY, pb.P_BRAND,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, sc.S_CITY, pb.P_BRAND;
+optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
+where (d.D_YEAR = 1997 or d.D_YEAR = 1998)
+and c.C_REGION = "AMERICA"
+and p.P_CATEGORY = "MFGR#14"
+and s.S_NATION = "UNITED STATES"
+return d.D_YEAR, s.S_CITY, p.P_BRAND,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
+ORDER BY d.D_YEAR, s.S_CITY, p.P_BRAND;
 ```
 
-###### Explicit version (version 2)
-
-```cypher
-optional match (cr:c_region)<-[:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part)-[:part_category]->(pc:p_category),
-(sn:s_nation)<-[:supplier_nation]-(s:supplier)<-[:order_supplier]-(l)-[:order_date]->(d:date),(p)-[:part_brand]->(pb:p_brand),(s)-[:supplier_city]->(sc:s_city)
-where date({year:2020,month:01}) <= l.TRANSACTION_TIME < date({year:2021,month:01})
-and cr.C_REGION = "AMERICA"
-and pc.P_BRAND = "MFGR#14"
-and sn.S_NATION = "UNITED STATES" 
-return d.D_YEAR, sc.S_CITY, pb.P_BRAND,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, sc.S_CITY, pb.P_BRAND;
-```
