@@ -17,9 +17,7 @@ As the SSB data span from 1992 to 1998, the following changes in relationships w
 
 (3) For the dimension Part, the Size attributes of one hundred randomly selected products were changed . Thus, these products had two different sizes; they had one size for the time interval T3 = [FD3 = 01/01/1992, TD3 = 01/01/1995] and another size for the time interval T3 = [FD3 = 01/01/1995, TD3 = 31/12/9999]
 
-It should be noted that the validity period of the versions may correspond to the effective validity period of the data as well as being different for dealing with earlier data as in this case.  
-
-We were able to apply the 13 queries proposed on SSB which we took up in CRL either explicitly to query a particular version or implicitly to query all versions according to the existing schema. Some queries were readjusted to match the time intervals established during the versioning. Note that some queries has been adjusted to match the different schema versions.
+The queries will be conditioned on the FD and TD parameters to obtain a consistent result that accurately reflects the state of the data. We were able to apply the 13 proposed queries for SSB in a temporal format, and all results were verified.
 
 ## 1. Platform, data and installation. 
 
