@@ -83,15 +83,7 @@ match (d:date)<-[:order_date]-(l:lineorder)-[r:order_part]->(p:part)
 return d.d_year, count(distinct(p.partkey)), sum(l.lo_revenue) 
 order by d.d_year
 ```
-The results of the queries presented in the examples are shown as follows :
 
-![Cover](https://github.com/Redwass/GAMM/blob/main/figures/queries_results.JPG)
-
-Explicit query in example 1 displays the slaes_amount per year and the number of pieces. According to TT parameter, the result is obtained only on version 2 although the dimension part has instances in all 3 versions.
-
-In the other side, implicit query in example 2 witch is same like query 1 with out TT parameter show the result in all 3 versions as the dimension  part exists in all these 3 versions of the scheme.
-
-We present below an implicit and explicit version of each of the 13 proposed queries on SSB set up in CLR. Some queries have been readjusted to match the time intervals established during versioning or the schema of version. For example, the first query in SSB was adjusted by changing the D_YEAR attribute to 1997 instead of 1994 in SSB to match the versioning we established because the Quantity measure was created only from the 3rd version of the schema and using data from the years 1997 and 1998.
 
 ##### Q1.1 
 
