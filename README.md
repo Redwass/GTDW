@@ -51,10 +51,10 @@ neo4j-admin import --database=GTDW --nodes=lineorder=C:\td\lineorder-header.csv,
 After the database is set up using the neo4j-admin command, it must be created manually on :
 
 #### Command line
-CREATE DATABASE gammssb (on system database)
+CREATE DATABASE GTDW (on system database)
 
 #### Neo4j desktop 
-on the <<+Create database>> tab with the name gammssb.
+on the <<+Create database>> tab with the name GTDW.
 
 ### 1.4 Create indexes
 This is not required, but you can create the following indexes to optimise query execution :
@@ -69,22 +69,11 @@ create index idxex_customer_nation for (c:customer) on (c.C_NATION);
 
 create index idxex_customer_city for (c:customer) on (c.C_CITY);
 
+### 1.5 Generate changes in relationships
+
 ## 2. Queries
 
-Here are the 13 SSB queries using the Cypher Language Request (CLR) and some extra queries to explain explicit and implicit requests in GAMM. They can be applied on Cypher-shell or in Neo4j Browser.
-
-GAMM offers a great flexibility in the elaboration of explicit and implicit queries which we detail through the following examples. The queries are written in Cypher Language Request CLR specific to the Neo4j graph database :
-
-(1) Explicit requests. Allow to extract data from a specific version or set of versions based on the time parameter TT using the clause **where 𝑆𝑇𝑛 <=TT<𝐸𝑇𝑛** with 𝑇𝑛 =[𝑆𝑇𝑛 ,𝐸𝑇𝑛 ] is the period of validity of version 𝑉𝑛. 
-
-Example 1 :
-```cypher
-match (d:date)<-[:order_date]-(l:lineorder)-[r:order_part]->(p:part) 
-where 𝑆𝑇2 <= l.TT < 𝑆𝑇2 
-return d.d_year, count(distinct(p.partkey)), sum(l.lo_revenue) 
-order by d.d_year
-```
-Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N.
+Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal format. They can be applied on Cypher-shell or in Neo4j Browser. queries has been conditioned according to the FD and TD parameters using the clause **where FD <=Valid_Time<TD. Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N.
 
 (2) Implicit requests: Allows the browsing of all instances related to the entities specified in the query without version restriction. This feature, which is due to the ability of graph databases to traverse instances through the relationships between entities, offers a big advantage in formulating cross-queries using the same simple queries whatever the number of versions. 
 
