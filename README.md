@@ -70,6 +70,7 @@ create index idxex_customer_nation for (c:customer) on (c.C_NATION);
 create index idxex_customer_city for (c:customer) on (c.C_CITY);
 
 ### 1.5 Generate changes in relationships
+Put customer_change, supplier_change and part_change in the neo4j Import folder and then apply these commands : 
 #### 1.5.1 Changes in Customer dimension
 ```cypher
 LOAD CSV WITH HEADERS FROM 'file:///customer_change.csv' AS row
@@ -120,8 +121,8 @@ LOAD CSV WITH HEADERS FROM 'file:///part_change.csv' AS row
 WITH row.PARTKEY AS PARTKEY, row.P_SIZE_ID AS P_SIZE_ID, date(row.R_START_DATE) AS R_START_DATE,date(row.R_END_DATE) AS R_END_DATE
 MATCH (p:part {PARTKEY: PARTKEY})
 MATCH (ps:part_size {P_SIZE_ID: P_SIZE_ID})
-MATCH (p)-[rel:part_size {STATUS :"LAST"}]->(:part_size)
-CREATE (p)-[rel2:part_size]->(ps)
+MATCH g=(p)-[rel:part_size]->(:part_size)
+CREATE (p)-[rel2:part_size {STATUS :"LAST"}]->(ps)
 set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
 set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
 RETURN count(rel),count(rel2)
