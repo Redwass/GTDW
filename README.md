@@ -109,7 +109,7 @@ CREATE (s)-[rel6:supplier_region]->(sr)
 set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
 set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
 set rel3.E_R_DATE = R_START_DATE,rel3.STATUS="OLD"
-set rel4.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel4.STATUS="LAST"
+set rel4.S_R_DATE = R_START_DATE,rel4.E_R_DATE = R_END_DATE,rel4.STATUS="LAST"
 set rel5.E_R_DATE = R_START_DATE,rel5.STATUS="OLD"
 set rel6.S_R_DATE = R_START_DATE,rel6.E_R_DATE = R_END_DATE,rel6.STATUS="LAST"
 RETURN count(rel2),count(rel4),count(rel6);
