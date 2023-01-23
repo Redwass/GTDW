@@ -78,12 +78,12 @@ MATCH (c:customer {CUSTKEY: CUSTKEY})
 MATCH (ct:c_city {C_CITY_ID: C_CITY_ID})
 MATCH (cn:c_nation {C_NATION_ID: C_NATION_ID})
 MATCH (cr:c_region {C_REGION_ID: C_REGION_ID})
-MATCH (c)-[rel:customer_city {STATUS :"LAST"}]->(:c_city)
-MATCH (c)-[rel3:customer_nation {STATUS :"LAST"}]->(:c_nation)
-MATCH (c)-[rel5:customer_region {STATUS :"LAST"}]->(:c_region)
-MERGE (c)-[rel2:customer_city]->(ct)
-MERGE (c)-[rel4:customer_nation]->(cn)
-MERGE (c)-[rel6:customer_region]->(cr)
+MATCH (c)-[rel:customer_city {STATUS :"LAST"}]->(:s_city)
+MATCH (c)-[rel3:customer_nation {STATUS :"LAST"}]->(:s_nation)
+MATCH (c)-[rel5:customer_region {STATUS :"LAST"}]->(:s_region)
+CREATE (c)-[rel2:customer_city]->(ct)
+CREATE (c)-[rel4:customer_nation]->(cn)
+CREATE (c)-[rel6:customer_region]->(cr)
 set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
 set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
 set rel3.E_R_DATE = R_START_DATE,rel3.STATUS="OLD"
@@ -100,12 +100,12 @@ MATCH (s:supplier {SUPPKEY: SUPPKEY})
 MATCH (sc:s_city {S_CITY_ID: S_CITY_ID})
 MATCH (sn:s_nation {S_NATION_ID: S_NATION_ID})
 MATCH (sr:s_region {S_REGION_ID: S_REGION_ID})
-MATCH (s)-[rel:supplier_city {STATUS :"LAST"}]->(:s_city)
-MATCH (s)-[rel3:supplier_nation {STATUS :"LAST"}]->(:s_nation)
-MATCH (s)-[rel5:supplier_region {STATUS :"LAST"}]->(:s_region)
-MERGE (s)-[rel2:supplier_city]->(sc)
-MERGE (s)-[rel4:supplier_nation]->(sn)
-MERGE (s)-[rel6:supplier_region]->(sr)
+MATCH (s)-[rel:supplier_city {STATUS :"LAST"}]->(sc)
+MATCH (s)-[rel3:supplier_nation {STATUS :"LAST"}]->(sn)
+MATCH (s)-[rel5:supplier_region {STATUS :"LAST"}]->(sr)
+CREATE (s)-[rel2:supplier_city]->(sc)
+CREATE (s)-[rel4:supplier_nation]->(sn)
+CREATE (s)-[rel6:supplier_region]->(sr)
 set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
 set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
 set rel3.E_R_DATE = R_START_DATE,rel3.STATUS="OLD"
@@ -116,7 +116,15 @@ RETURN count(rel2),count(rel4),count(rel6);
 ```
 #### 1.5.3 Changes in Size attribute
 ```cypher
-
+LOAD CSV WITH HEADERS FROM 'file:///part_change.csv' AS row
+WITH row.PARTKEY AS PARTKEY, row.P_SIZE_ID AS P_SIZE_ID, date(row.R_START_DATE) AS R_START_DATE,date(row.R_END_DATE) AS R_END_DATE
+MATCH (p:part {PARTKEY: PARTKEY})
+MATCH (ps:part_size {P_SIZE_ID: P_SIZE_ID})
+MATCH (p)-[rel:part_size {STATUS :"LAST"}]->(:part_size)
+CREATE (p)-[rel2:part_size]->(ps)
+set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
+set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
+RETURN count(rel),count(rel2)
 ```
 
 ## 2. Queries
