@@ -74,58 +74,58 @@ Put customer_change, supplier_change and part_change in the neo4j Import folder 
 #### 1.5.1 Changes in Customer dimension
 ```cypher
 LOAD CSV WITH HEADERS FROM 'file:///customer_change.csv' AS row
-WITH row.CUSTKEY AS CUSTKEY, row.C_CITY_ID AS C_CITY_ID, row.C_NATION_ID AS C_NATION_ID, row.C_REGION_ID AS C_REGION_ID, date(row.R_START_DATE) AS R_START_DATE,date(row.R_END_DATE) AS R_END_DATE
+WITH row.CUSTKEY AS CUSTKEY, row.C_CITY_ID AS C_CITY_ID, row.C_NATION_ID AS C_NATION_ID, row.C_REGION_ID AS C_REGION_ID, date(row.From_Date) AS From_Date,date(row.To_Date) AS To_Date
 MATCH (c:customer {CUSTKEY: CUSTKEY})
 MATCH (ct:c_city {C_CITY_ID: C_CITY_ID})
 MATCH (cn:c_nation {C_NATION_ID: C_NATION_ID})
 MATCH (cr:c_region {C_REGION_ID: C_REGION_ID})
-MATCH (c)-[rel:customer_city {STATUS :"LAST"}]->(:s_city)
-MATCH (c)-[rel3:customer_nation {STATUS :"LAST"}]->(:s_nation)
-MATCH (c)-[rel5:customer_region {STATUS :"LAST"}]->(:s_region)
+MATCH (c)-[rel:customer_city {STATUS :"LAST"}]->(:c_city)
+MATCH (c)-[rel3:customer_nation {STATUS :"LAST"}]->(:c_nation)
+MATCH (c)-[rel5:customer_region {STATUS :"LAST"}]->(:c_region)
 CREATE (c)-[rel2:customer_city]->(ct)
 CREATE (c)-[rel4:customer_nation]->(cn)
 CREATE (c)-[rel6:customer_region]->(cr)
-set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
-set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
-set rel3.E_R_DATE = R_START_DATE,rel3.STATUS="OLD"
-set rel4.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel4.STATUS="LAST"
-set rel5.E_R_DATE = R_START_DATE,rel5.STATUS="OLD"
-set rel6.S_R_DATE = R_START_DATE,rel6.E_R_DATE = R_END_DATE,rel6.STATUS="LAST"
+set rel.To_Date = From_Date,rel.STATUS="OLD"
+set rel2.From_Date = From_Date,rel2.To_Date = To_Date,rel2.STATUS="LAST"
+set rel3.To_Date = From_Date,rel3.STATUS="OLD"
+set rel4.From_Date = From_Date,rel4.To_Date = To_Date,rel4.STATUS="LAST"
+set rel5.To_Date = From_Date,rel5.STATUS="OLD"
+set rel6.From_Date = From_Date,rel6.To_Date = To_Date,rel6.STATUS="LAST"
 RETURN count(rel2),count(rel4),count(rel6);
 ```
 #### 1.5.2 Changes in Supplier dimension
 ```cypher
 LOAD CSV WITH HEADERS FROM 'file:///supplier_change.csv' AS row
-WITH row.SUPPKEY AS SUPPKEY, row.S_CITY_ID AS S_CITY_ID, row.S_NATION_ID AS S_NATION_ID, row.S_REGION_ID AS S_REGION_ID, date(row.R_START_DATE) AS R_START_DATE,date(row.R_END_DATE) AS R_END_DATE
+WITH row.SUPPKEY AS SUPPKEY, row.S_CITY_ID AS S_CITY_ID, row.S_NATION_ID AS S_NATION_ID, row.S_REGION_ID AS S_REGION_ID, date(row.From_Date) AS From_Date,date(row.To_Date) AS To_Date
 MATCH (s:supplier {SUPPKEY: SUPPKEY})
 MATCH (sc:s_city {S_CITY_ID: S_CITY_ID})
 MATCH (sn:s_nation {S_NATION_ID: S_NATION_ID})
 MATCH (sr:s_region {S_REGION_ID: S_REGION_ID})
-MATCH (s)-[rel:supplier_city {STATUS :"LAST"}]->(sc)
-MATCH (s)-[rel3:supplier_nation {STATUS :"LAST"}]->(sn)
-MATCH (s)-[rel5:supplier_region {STATUS :"LAST"}]->(sr)
+MATCH (s)-[rel:supplier_city {STATUS :"LAST"}]->(:s_city)
+MATCH (s)-[rel3:supplier_nation {STATUS :"LAST"}]->(:s_nation)
+MATCH (s)-[rel5:supplier_region {STATUS :"LAST"}]->(:s_region)
 CREATE (s)-[rel2:supplier_city]->(sc)
 CREATE (s)-[rel4:supplier_nation]->(sn)
 CREATE (s)-[rel6:supplier_region]->(sr)
-set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
-set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
-set rel3.E_R_DATE = R_START_DATE,rel3.STATUS="OLD"
-set rel4.S_R_DATE = R_START_DATE,rel4.E_R_DATE = R_END_DATE,rel4.STATUS="LAST"
-set rel5.E_R_DATE = R_START_DATE,rel5.STATUS="OLD"
-set rel6.S_R_DATE = R_START_DATE,rel6.E_R_DATE = R_END_DATE,rel6.STATUS="LAST"
+set rel.To_Date = From_Date,rel.STATUS="OLD"
+set rel2.From_Date = From_Date,rel2.To_Date = To_Date,rel2.STATUS="LAST"
+set rel3.To_Date = From_Date,rel3.STATUS="OLD"
+set rel4.From_Date = From_Date,rel4.To_Date = To_Date,rel4.STATUS="LAST"
+set rel5.To_Date = From_Date,rel5.STATUS="OLD"
+set rel6.From_Date = From_Date,rel6.To_Date = To_Date,rel6.STATUS="LAST"
 RETURN count(rel2),count(rel4),count(rel6);
 ```
 #### 1.5.3 Changes in Size attribute
 ```cypher
 LOAD CSV WITH HEADERS FROM 'file:///part_change.csv' AS row
-WITH row.PARTKEY AS PARTKEY, row.P_SIZE_ID AS P_SIZE_ID, date(row.R_START_DATE) AS R_START_DATE,date(row.R_END_DATE) AS R_END_DATE
+WITH row.PARTKEY AS PARTKEY, row.P_SIZE_ID AS P_SIZE_ID, date(row.From_Date) AS From_Date,date(row.To_Date) AS To_Date
 MATCH (p:part {PARTKEY: PARTKEY})
 MATCH (ps:part_size {P_SIZE_ID: P_SIZE_ID})
-MATCH g=(p)-[rel:part_size]->(:part_size)
-CREATE (p)-[rel2:part_size {STATUS :"LAST"}]->(ps)
-set rel.E_R_DATE = R_START_DATE,rel.STATUS="OLD"
-set rel2.S_R_DATE = R_START_DATE,rel2.E_R_DATE = R_END_DATE,rel2.STATUS="LAST"
-RETURN count(rel),count(rel2)
+MATCH (p)-[rel:part_size {STATUS :"LAST"}]->(:part_size)
+CREATE (p)-[rel2:part_size]->(ps)
+set rel.To_Date = From_Date,rel.STATUS="OLD"
+set rel2.From_Date = From_Date,rel2.To_Date = To_Date,rel2.STATUS="LAST"
+RETURN count(rel),count(rel2);
 ```
 
 ## 2. Queries
