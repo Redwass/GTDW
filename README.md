@@ -180,48 +180,55 @@ profile optional match (pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_
 where r.From_Date <= l.ORDERDATE < r.To_Date  
 and srn.S_REGION_NAME = "AMERICA"
 return sum(l.LO_REVENUE),d.D_YEAR,pbn.P_BRAND_NAME
-ORDER BY d.D_YEAR,pbn.P_BRAND_NAME
+ORDER BY d.D_YEAR,pbn.P_BRAND_NAME;
 ```
 
 ##### Q2.2
 
 ```cypher
-optional match (p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier),(d:date)<-[:order_date]-(l)
-where (p.P_BRAND >= "MFGR#2221" and p.P_BRAND <= "MFGR#2228")
-and s.S_REGION = "ASIA" 
-return sum(l.LO_REVENUE),d.D_YEAR, p.P_BRAND
-ORDER BY d.D_YEAR, p.P_BRAND;
+optional match (pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name),(d:date)<-[:order_date]-(l)
+where r.From_Date <= l.ORDERDATE < r.To_Date
+and (pbn.P_BRAND_NAME >= "MFGR#2221" and pbn.P_BRAND_NAME <= "MFGR#2228")  
+and srn.S_REGION_NAME = "ASIA"
+return sum(l.LO_REVENUE),d.D_YEAR,pbn.P_BRAND_NAME
+ORDER BY d.D_YEAR,pbn.P_BRAND_NAME;
 ```
 
 ##### Q2.3
 
 ```cypher
-optional match (p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier),(d:date)<-[:order_date]-(l)
-where p.P_BRAND1 = "MFGR#2239" 
-and s.S_REGION = "EUROPE" 
-return sum(l.LO_REVENUE),d.D_YEAR, p.P_BRAND
-ORDER BY d.D_YEAR, p.P_BRAND;
+optional match (pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name),(d:date)<-[:order_date]-(l)
+where r.From_Date <= l.ORDERDATE < r.To_Date
+and pbn.P_BRAND_NAME = "MFGR#2239"  
+and srn.S_REGION_NAME = "EUROPE"
+return sum(l.LO_REVENUE),d.D_YEAR,pbn.P_BRAND_NAME
+ORDER BY d.D_YEAR,pbn.P_BRAND_NAME
 ```
 
 ##### Q3.1
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
-where 1992<= d.D_YEAR <=1997
-and c.C_REGION starts with "ASIA"
-and s.S_REGION starts with "ASIA" 
-return c.C_NATION, s.S_NATION, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+optional match (crn:c_region_name)<-[:c_region_name]-(c_region)<-[r1:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(srn:s_region_name)<-[:s_region_name]-(sr:s_region)<-[r2:supplier_region]-(s:supplier)<-[:order_supplier]-(l),(cnn:c_nation_name)<-[:c_nation_name]-(c_nation)<-[r3:customer_nation]-(c),(snn:s_nation_name)<-[:s_nation_name]-(sn:s_nation)<-[r4:supplier_nation]-(s)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and 1992<= d.D_YEAR <=1997
+and crn.C_REGION_NAME = "ASIA"
+and srn.S_REGION_NAME = "ASIA" 
+return cnn.C_NATION_NAME, snn.S_NATION_NAME, d.D_YEAR, sum(l.LO_REVENUE) as revenu
 ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
+
 
 ##### Q3.2
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
-where 1992<= d.D_YEAR <=1997
-and c.C_NATION starts with "UNITED STATES" 
-and s.S_NATION starts with "UNITED STATES" 
-return c.C_CITY, s.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+optional match (cnn:c_nation_name)<-[:c_nation_name]-(c_nation)<-[r1:customer_nation]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(snn:s_nation_name)<-[:s_nation_name]-(sn:s_nation)<-[r2:supplier_nation]-(s:supplier)<-[:order_supplier]-(l),(ccn:c_city_name)<-[:c_city_name]-(c_city)<-[r3:customer_city]-(c),(scn:s_city_name)<-[:s_city_name]-(sc:s_city)<-[r4:supplier_city]-(s)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and 1992<= d.D_YEAR <=1997
+and cnn.C_NATION_NAME = "UNITED STATES"
+and snn.S_NATION_NAME = "UNITED STATES" 
+return ccn.C_CITY_NAME, scn.S_CITY_NAME, d.D_YEAR, sum(l.LO_REVENUE) as revenu
 ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
