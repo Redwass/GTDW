@@ -21,7 +21,7 @@ The queries will be conditioned on the FD and TD parameters to obtain a consiste
 
 ## 1. Platform, data and installation. 
 
-To install the GAMM with SSB data, use the graph database Neo4j version 4.x.x or higher. The data to be downloaded from [Download](https://github.com/Redwass/GAMM/tree/main/data) is in the CSV's files. The configuration and installation commands on Windows and Linux platforms are as follows:
+To install the GAMM with SSB data, use the graph database Neo4j version 4.x.x or higher. The data to be downloaded from [Download](https://github.com/Redwass/GTDW/tree/main/DATA) is in the CSV's files. The configuration and installation commands on Windows and Linux platforms are as follows:
 
 ### 1.1 Neo4j configuration
 
