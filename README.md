@@ -284,18 +284,22 @@ and crn.C_REGION_NAME = "AMERICA"
 and (pmn.P_MFGR_NAME = "MFGR#1" or pmn.P_MFGR_NAME = "MFGR#2")
 and srn.S_REGION_NAME = "AMERICA"
 return d.D_YEAR, snn.S_NATION_NAME,pcn.P_CATEGORY_NAME, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, snn.S_NATION_NAME,pcn.P_CATEGORY_NAME;;
+ORDER BY d.D_YEAR, snn.S_NATION_NAME,pcn.P_CATEGORY_NAME;
 ```
 
 ##### Q4.3
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
-where (d.D_YEAR = 1997 or d.D_YEAR = 1998)
-and c.C_REGION = "AMERICA"
-and p.P_CATEGORY = "MFGR#14"
-and s.S_NATION = "UNITED STATES"
-return d.D_YEAR, s.S_CITY, p.P_BRAND,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, s.S_CITY, p.P_BRAND;
+optional match (crn:c_region_name)<-[:c_region_name]-(c_region)<-[r1:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r2:supplier_nation]->(sn:s_nation)-[:s_nation_name]->(snn:s_nation_name), (pcn:p_category_name)<-[:p_category_name]-(p_category)<-[r3:part_category]-(p:part)<-[:order_part]-(l)-[:order_date]->(d:date), (ccn:c_city_name)<-[:c_city_name]-(c_city)<-[r4:customer_city]-(c), 
+(pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_brand]-(p)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and r3.From_Date <= l.ORDERDATE < r3.To_Date
+and (d.D_YEAR = 1997 or d.D_YEAR = 1998)
+and crn.C_REGION_NAME = "AMERICA"
+and pcn.P_CATEGORY_NAME = "MFGR#14"
+and snn.S_NATION_NAME = "UNITED STATES"
+return d.D_YEAR, ccn.C_CITY_NAME,pbn.P_BRAND_NAME, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
+ORDER BY d.D_YEAR, ccn.C_CITY_NAME,pbn.P_BRAND_NAME;
 ```
 
