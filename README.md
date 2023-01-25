@@ -134,7 +134,7 @@ Example : To display the revenue from the sales of products whose quantity was l
 ```cypher
 optional match (ps:part_size)<-[r:part_size]-(p:part)<-[:order_part]-(l:lineorder)
 where r.From_Date <= l.ORDERDATE < r.To_Date
-and l.LO_QUANTITY > 25
+and l.LO_QUANTITY < 25
 and ps.P_SIZE > 30
 return sum(l.LO_REVENUE);
 ```
