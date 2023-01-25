@@ -59,15 +59,13 @@ on the <<+Create database>> tab with the name GTDW.
 ### 1.4 Create indexes
 This is not required, but you can create the following indexes to optimise query execution :
 
+```cypher
 create index index_part_category for (pcn:p_category_name) on (pcn.P_CATEGORY_NAME);
-
 create index index_part_brand for (pbn:p_brand_name) on (pbn.P_BRAND_NAME);
-
 create index index_customer_region for (crn:c_region_name) on (crn.C_REGION_NAME);
-
 create index index_customer_nation for (cnn:c_nation_name) on (cnn.C_NATION_NAME);
-
 create index index_customer_city for (ccn:c_city_name) on (ccn.C_CITY_NAME);
+```
 
 ### 1.5 Generate changes in relationships
 Put customer_change, supplier_change and part_change in the neo4j Import folder and then apply these commands : 
