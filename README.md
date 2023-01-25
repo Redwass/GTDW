@@ -139,7 +139,7 @@ and ps.P_SIZE > 30
 return sum(l.LO_REVENUE);
 ```
 
-Here is a list of SSB queries using Cypher Language Request. They can be applied on Cypher-shell or in Neo4j Browser.
+Here is a list of SSB queries using Cypher Language Request. They can be applied on Cypher-shell or in Neo4j Browser (Note that type 1 requests are not affected by these temporal changes ).
 
 ##### Q1.1
 
