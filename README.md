@@ -235,11 +235,13 @@ ORDER BY d.D_YEAR ASC, revenu DESC;
 ##### Q3.3
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date),(s:supplier)<-[:order_supplier]-(l)
-where 1992<= d.D_YEAR <=1997
-and (c.C_CITY = "UNITED KI1" or c.C_CITY = "UNITED KI5") 
-and (s.S_CITY = "UNITED KI1" or s.S_CITY = "UNITED KI5") 
-return c.C_CITY, s.S_CITY, d.D_YEAR, sum(l.LO_REVENUE) as revenu
+optional match (ccn:c_city_name)<-[:c_city_name]-(c_city)<-[r1:customer_city]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r2:supplier_city]->(sc:s_city)-[:s_city_name]->(scn:s_city_name),(l)-[:order_date]->(d:date)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and 1992<= d.D_YEAR <=1997
+and (ccn.C_CITY_NAME = "UNITED KI1" or ccn.C_CITY_NAME = "UNITED KI5") 
+and (scn.S_CITY_NAME = "UNITED KI1" or scn.S_CITY_NAME = "UNITED KI5") 
+return ccn.C_CITY_NAME, scn.S_CITY_NAME, d.D_YEAR, sum(l.LO_REVENUE) as revenu
 ORDER BY d.D_YEAR ASC, revenu DESC;
 ```
 
