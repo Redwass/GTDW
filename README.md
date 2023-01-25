@@ -261,24 +261,30 @@ ORDER BY d.D_YEAR ASC, revenu DESC;
 ##### Q4.1
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
-where c.C_REGION = "AMERICA" 
-and (p.P_MFGR = "MFGR#1" or p.P_MFGR = "MFGR#2")
-and s.S_REGION = "AMERICA"
-return d.D_YEAR, c.C_NATION, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
-ORDER BY d.D_YEAR, c.C_NATION;
+optional match (crn:c_region_name)<-[:c_region_name]-(c_region)<-[r1:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r2:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name), (pmn:p_mfgr_name)<-[:p_mfgr_name]-(pm:p_mfgr)<-[r3:part_mfgr]-(p:part)<-[:order_part]-(l)-[:order_date]->(d:date), (cnn:c_nation_name)<-[:c_nation_name]-(c_nation)<-[r4:customer_nation]-(c)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and r3.From_Date <= l.ORDERDATE < r3.To_Date
+and crn.C_REGION_NAME = "AMERICA" 
+and (pmn.P_MFGR_NAME = "MFGR#1" or pmn.P_MFGR_NAME = "MFGR#2")
+and srn.S_REGION_NAME = "AMERICA"
+return d.D_YEAR, cnn.C_NATION_NAME, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
+ORDER BY d.D_YEAR, cnn.C_NATION_NAME;
 ```
 
 ##### Q4.2
 
 ```cypher
-optional match (c:customer)<-[:order_customer]-(l:lineorder)-[:order_part]->(p:part),(d:date)<-[:order_date]-(l)-[:order_supplier]->(s:supplier)
-where c.C_REGION starts with "AMERICA"
+optional match (crn:c_region_name)<-[:c_region_name]-(c_region)<-[r1:customer_region]-(c:customer)<-[:order_customer]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r2:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name), (pmn:p_mfgr_name)<-[:p_mfgr_name]-(pm:p_mfgr)<-[r3:part_mfgr]-(p:part)<-[:order_part]-(l)-[:order_date]->(d:date), (snn:s_nation_name)<-[:s_nation_name]-(sn:s_nation)<-[r4:supplier_nation]-(s), (pcn:p_category_name)<-[:p_category_name]-(p_category)<-[r5:part_category]-(p)
+where r1.From_Date <= l.ORDERDATE < r1.To_Date 
+and r2.From_Date <= l.ORDERDATE < r2.To_Date
+and r3.From_Date <= l.ORDERDATE < r3.To_Date
 and (d.D_YEAR = 1997 or d.D_YEAR = 1998)
-and (p.P_MFGR = "MFGR#1" or p.P_MFGR = "MFGR#2")
-and s.S_REGION = "AMERICA"
-return d.D_YEAR, s.S_NATION, p.P_CATEGORY,(sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as profit
-ORDER BY d.D_YEAR, s.S_NATION, p.P_CATEGORY;
+and crn.C_REGION_NAME = "AMERICA" 
+and (pmn.P_MFGR_NAME = "MFGR#1" or pmn.P_MFGR_NAME = "MFGR#2")
+and srn.S_REGION_NAME = "AMERICA"
+return d.D_YEAR, snn.S_NATION_NAME,pcn.P_CATEGORY_NAME, (sum(l.LO_REVENUE) - sum(l.LO_SUPPLYCOST)) as supplycost
+ORDER BY d.D_YEAR, snn.S_NATION_NAME,pcn.P_CATEGORY_NAME;;
 ```
 
 ##### Q4.3
