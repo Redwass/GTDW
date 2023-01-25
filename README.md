@@ -132,16 +132,13 @@ RETURN count(rel),count(rel2);
 
 Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal format. They can be applied on Cypher-shell or in Neo4j Browser. queries has been conditioned according to the FD and TD parameters using the clause **where FD <=Valid_Time<TD. Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N. 
 
-Example 2 :
+Example : To display the revenue from the sales of products whose quantity was greater than 30 and whose quantity is less than 30, the query will be as follows. 
 ```cypher
-OPTIONAL MATCH (c:cc_city)<-[:c_c_name]-(:c_city)<-[r1:customer_city]-(:customer)<-[:order_customer]-(l:lineorder)-[:order_date]->(d:date), (s:sc_city) <-[:s_c_name] - (:s_city) <-[r2:supplier_city] - (s:supplier) <- [:order_supplier]-(l)
-WHERE r1.From_Date <= l.valid_date < r1.To_Date 
-AND r2.From_Date <= l.valid_date < r2.To_Date 
-AND 1992<= d.D_YEAR <=1997
-AND (c.c_city = "united ki1" OR c.c_city = "united ki5")
-AND (s.s_city = "united ki1" OR s.s_city = "united ki5")
-RETURN c.c_city, s.s_city, d.d_year, SUM(l.lo_revenue) AS revenu
-ORDER BY d.d_year ASC, revenu DESC
+optional match (ps:part_size)<-[r:part_size]-(p:part)<-[:order_part]-(l:lineorder)
+where r.From_Date <= l.ORDERDATE < r.To_Date
+and l.LO_QUANTITY < 25
+and ps.P_SIZE > 30
+return sum(l.LO_REVENUE);
 ```
 
 Here is a list of SSB queries using Cypher Language Request. They can be applied on Cypher-shell or in Neo4j Browser.
@@ -151,7 +148,7 @@ Here is a list of SSB queries using Cypher Language Request. They can be applied
 ```cypher
 optional match (d:date{D_YEAR:1993})<-[r:order_date]-(l:lineorder)
 where 1<= l.LO_DISCOUNT <=3
-and l.LO_QUANTITY < 25
+and l.LO_QUANTITY > 25
 return sum(l.LO_REVENUE);
 ```
 
