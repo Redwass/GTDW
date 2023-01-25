@@ -130,11 +130,11 @@ RETURN count(rel),count(rel2);
 
 Here are the 13 SSB queries using the Cypher Language Request (CLR) in temporal format. They can be applied on Cypher-shell or in Neo4j Browser. queries has been conditioned according to the FD and TD parameters using the clause **where FD <=Valid_Time<TD. Note that in the CRL, the clause : **return 𝑣𝑎𝑙𝑢𝑒 1,.., 𝑣𝑎𝑙𝑢𝑒 N , aggregate_function(attribute)** allows for grouping aggregation by 𝑣𝑎𝑙𝑢𝑒 1... 𝑣𝑎𝑙𝑢𝑒 N. 
 
-Example : To display the revenue from the sales of products whose quantity was greater than 30 and whose quantity is less than 30, the query will be as follows. 
+Example : To display the revenue from the sales of products whose quantity was less than 25 and whose size is greater than 30, the query will be as follows. 
 ```cypher
 optional match (ps:part_size)<-[r:part_size]-(p:part)<-[:order_part]-(l:lineorder)
 where r.From_Date <= l.ORDERDATE < r.To_Date
-and l.LO_QUANTITY < 25
+and l.LO_QUANTITY > 25
 and ps.P_SIZE > 30
 return sum(l.LO_REVENUE);
 ```
