@@ -68,7 +68,7 @@ create index index_customer_city for (ccn:c_city_name) on (ccn.C_CITY_NAME);
 ```
 
 ### 1.5 Generate changes in relationships
-Put customer_change, supplier_change and part_change in the neo4j Import folder and then apply these commands : 
+Put customer_change, supplier_change and part_change files in the neo4j Import folder and then apply these commands : 
 #### 1.5.1 Changes in Customer dimension
 ```cypher
 LOAD CSV WITH HEADERS FROM 'file:///customer_change.csv' AS row
