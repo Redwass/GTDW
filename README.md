@@ -153,8 +153,7 @@ return sum(l.LO_REVENUE);
 ##### Q1.2
 
 ```cypher
-optional match (d:date{D_YEARMONTHNUM:199401})
-<-[r:order_date]-(l:lineorder)
+optional match (d:date{D_YEARMONTHNUM:199401})<-[r:order_date]-(l:lineorder)
 where 4<= l.LO_DISCOUNT <=6
 and 26<= l.LO_QUANTITY <= 35
 return sum(l.LO_REVENUE);
