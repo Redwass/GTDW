@@ -171,7 +171,7 @@ return sum(l.LO_REVENUE);
 ##### Q2.1
 
 ```cypher
-profile optional match (pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name),(d:date)<-[:order_date]-(l)
+optional match (pbn:p_brand_name)<-[:p_brand_name]-(pb:p_brand)<-[:part_brand]-(p:part)<-[:order_part]-(l:lineorder)-[:order_supplier]->(s:supplier)-[r:supplier_region]->(sr:s_region)-[:s_region_name]->(srn:s_region_name),(d:date)<-[:order_date]-(l)
 where r.From_Date <= l.ORDERDATE < r.To_Date  
 and srn.S_REGION_NAME = "AMERICA"
 return sum(l.LO_REVENUE),d.D_YEAR,pbn.P_BRAND_NAME
